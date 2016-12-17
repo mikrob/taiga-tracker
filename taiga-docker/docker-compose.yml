@@ -1,0 +1,56 @@
+data:
+  image: tianon/true
+  volumes:
+    - /var/lib/postgresql/data
+    - /usr/local/taiga/media
+    - /usr/local/taiga/static
+    - /usr/local/taiga/logs
+taigadb:
+  image: postgres
+  environment:
+    POSTGRES_USER: taiga
+    POSTGRES_PASSWORD: Un1c0rn
+  volumes_from:
+    - data
+taigaback:
+  image: beevelop/taiga-back
+  environment:
+    SECRET_KEY: Un1c0rns_4r3_4w3s0m3
+
+    PUBLIC_REGISTER_ENABLED: "True"
+    FEEDBACK_ENABLED: "True"
+    FEEDBACK_EMAIL: unicorn@example.com
+    STATS_ENABLED: "False"
+
+    FRONT_SITEMAP_ENABLED: "True"
+
+    SAMPLE_DATA: "False"
+
+    DEBUG_ENTRYPOINT: "True"
+    DEBUG: "True"
+    TEMPLATE_DEBUG: "True"
+
+    EMAIL_USE_TLS: "True"
+    EMAIL_HOST: smtp.gmail.com
+    EMAIL_PORT: 587
+    EMAIL_HOST_USER: unicorn@gmail.com
+    EMAIL_HOST_PASSWORD: yourpassword
+    DEFAULT_FROM_EMAIL: noreply@taiga.example.com
+  links:
+    - taigadb:postgres
+  volumes_from:
+    - data
+taigafront:
+  image: beevelop/taiga-front
+  environment:
+    DEFAULT_LANGUAGE: en
+    PRIVACY_POLICY_URL: https://taiga.example.com/privacy_policy
+    TERMS_OF_SERVICE_URL: https://taiga.example.com/tos
+    DEBUG_ENTRYPOINT: "True"
+    DEBUG: "False"
+  links:
+    - taigaback
+  volumes_from:
+    - data
+  ports:
+    - 80:80
