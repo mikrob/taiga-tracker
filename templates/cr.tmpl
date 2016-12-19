@@ -25,7 +25,6 @@
         <h5>
             User Stories Accepted
         </h5>
-        {{ range $user, $stories := .userStoriesDone }}
         <table>
             <thead>
                 <tr>
@@ -35,21 +34,19 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $us := $stories }}
+                {{ range $index, $us := .userStoriesDone }}
                 <tr>
                     <td> {{ $us.ID }}</td>
                     <td>{{ $us.Subject }}</td>
-                    <td>{{ $user }}</td>
+                    <td>{{ $us.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
 
         <h5>
             User Stories Rejected
         </h5>
-        {{ range $user, $stories := .userStoriesRejected }}
         <table>
             <thead>
                 <tr>
@@ -59,23 +56,21 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $us := $stories }}
+                {{ range $index, $us := .userStoriesRejected }}
                 <tr>
                     <td> {{ $us.ID }}</td>
                     <td>{{ $us.Subject }}</td>
-                    <td>{{ $user }}</td>
+                    <td>{{ $us.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
 
 
         <h5>
             Issues Accepted
         </h5>
 
-        {{ range $user, $issueList := .issuesDone }}
         <table>
             <thead>
                 <tr>
@@ -85,22 +80,19 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $issue := $issueList }}
+                {{ range $index, $issue := .issuesDone }}
                 <tr>
                     <td> {{ $issue.ID }}</td>
                     <td>{{ $issue.Subject }}</td>
-                    <td>{{ $user }}</td>
+                    <td>{{ $issue.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
 
         <h5>
             Issues Rejected
         </h5>
-        {{ range $user, $issueList := .issuesRejected }}
-        <b></b>
         <table>
             <thead>
                 <tr>
@@ -110,16 +102,15 @@
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $issue := $issueList }}
+                {{ range $index, $issue := .issuesRejected }}
                 <tr>
                     <td> {{ $issue.ID }}</td>
                     <td>{{ $issue.Subject }}</td>
-                    <td>{{ $user }}</td>
+                    <td>{{ $issue.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
     </div>
 
 

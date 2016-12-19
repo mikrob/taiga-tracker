@@ -14,10 +14,10 @@ type TaigaManager struct {
 	Milestone               *taiga.Milestone
 	StoriesPerUsers         map[string][]taiga.Userstory
 	IssuesPerUsers          map[string][]taiga.Issue
-	StoriesDonePerUsers     map[string][]taiga.Userstory
-	StoriesRejectedPerUsers map[string][]taiga.Userstory
-	IssuesDonePerUsers      map[string][]taiga.Issue
-	IssuesRejectedPerUsers  map[string][]taiga.Issue
+	StoriesDonePerUsers     []taiga.Userstory
+	StoriesRejectedPerUsers []taiga.Userstory
+	IssuesDonePerUsers      []taiga.Issue
+	IssuesRejectedPerUsers  []taiga.Issue
 	PointList               map[int]string
 	RoleList                map[string]string
 }
@@ -192,22 +192,24 @@ func (t *TaigaManager) retrieveIssueHistory(issue taiga.Issue) (string, string) 
 
 //MapStoriesDonePerUsers make data to storie that have been done today
 func (t *TaigaManager) MapStoriesDonePerUsers() {
-	t.StoriesDonePerUsers = make(map[string][]taiga.Userstory)
+	var storiesDones []taiga.Userstory
 	nowYear, nowMonth, nowDay := time.Now().Date()
 	for _, us := range t.Milestone.UserStoryList {
 		year, month, day := us.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
 			if fromStatus == "Ready for test" && toStatus == "Done" {
-				t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
+				us.AssignedUser = userList[us.Assigne]
+				storiesDones = append(storiesDones, *us)
 			}
 		}
 	}
+	t.StoriesDonePerUsers = storiesDones
 }
 
 //MapStoriesRejectedPerUsers make data to storie that have been done today
 func (t *TaigaManager) MapStoriesRejectedPerUsers() {
-	t.StoriesRejectedPerUsers = make(map[string][]taiga.Userstory)
+	var storiesRejected []taiga.Userstory
 	nowYear, nowMonth, nowDay := time.Now().Date()
 	for _, us := range t.Milestone.UserStoryList {
 		year, month, day := us.LastModified.Date()
@@ -215,16 +217,17 @@ func (t *TaigaManager) MapStoriesRejectedPerUsers() {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
 			fmt.Println(fmt.Sprintf("US : %s, fromStatus : %s, toStatus :%s", us.Subject, fromStatus, toStatus))
 			if fromStatus == "Ready for test" && toStatus == "In progress" {
-				t.StoriesRejectedPerUsers[userList[us.Assigne]] = append(t.StoriesRejectedPerUsers[userList[us.Assigne]], *us)
+				us.AssignedUser = userList[us.Assigne]
+				storiesRejected = append(storiesRejected, *us)
 			}
 		}
 	}
+	t.StoriesRejectedPerUsers = storiesRejected
 }
 
 //MapIssuesDonePerUsers map issue done per users
 func (t *TaigaManager) MapIssuesDonePerUsers() {
-	fmt.Println("MAP ISSUE DONE")
-	t.IssuesDonePerUsers = make(map[string][]taiga.Issue)
+	var issuesDone []taiga.Issue
 	issueList, _, err := t.taigaClient.Issues.ListIssues()
 	nowYear, nowMonth, nowDay := time.Now().Date()
 
@@ -237,16 +240,17 @@ func (t *TaigaManager) MapIssuesDonePerUsers() {
 			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
 			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
 			if fromStatus == "Ready for test" && toStatus == "Closed" {
-				t.IssuesDonePerUsers[userList[issue.Assigne]] = append(t.IssuesDonePerUsers[userList[issue.Assigne]], *issue)
+				issue.AssignedUser = userList[issue.Assigne]
+				issuesDone = append(issuesDone, *issue)
 			}
 		}
 	}
+	t.IssuesDonePerUsers = issuesDone
 }
 
 //MapIssuesRejectedPerUsers map issue rejected per users
 func (t *TaigaManager) MapIssuesRejectedPerUsers() {
-	fmt.Println("MAP ISSUE REJECTED")
-	t.IssuesRejectedPerUsers = make(map[string][]taiga.Issue)
+	var issuesRejected []taiga.Issue
 	issueList, _, err := t.taigaClient.Issues.ListIssues()
 	nowYear, nowMonth, nowDay := time.Now().Date()
 
@@ -259,10 +263,12 @@ func (t *TaigaManager) MapIssuesRejectedPerUsers() {
 			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
 			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
 			if fromStatus == "Ready for test" && toStatus == "In progress" {
-				t.IssuesRejectedPerUsers[userList[issue.Assigne]] = append(t.IssuesRejectedPerUsers[userList[issue.Assigne]], *issue)
+				issue.AssignedUser = userList[issue.Assigne]
+				issuesRejected = append(issuesRejected, *issue)
 			}
 		}
 	}
+	t.IssuesRejectedPerUsers = issuesRejected
 }
 
 //MapIssuesPerUsers retrieve issue in progress and map them per users
