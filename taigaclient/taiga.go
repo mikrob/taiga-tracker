@@ -3,8 +3,9 @@ package taigaclient
 import (
 	"fmt"
 	"strconv"
-	"taiga-gitlab/taiga"
 	"time"
+
+	"gitlab.botsunit.com/infra/taiga-gitlab/taiga"
 )
 
 // TaigaManager manage interactions with taiga
