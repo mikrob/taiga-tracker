@@ -19,6 +19,7 @@ func main() {
 	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword)
 	taigaManager.GetMilestoneWithDetails("0.5", "Ufancyme")
 	taigaManager.MapStoriesPerUsers()
+	taigaManager.MapIssuesPerUsers()
 
 	for user, userStories := range taigaManager.StoriesPerUsers {
 		fmt.Println("================================================================================================")
@@ -30,7 +31,14 @@ func main() {
 		fmt.Println("================================================================================================")
 	}
 
-	taigaManager.GetStatusUS()
+	for user, issueList := range taigaManager.IssuesPerUsers {
+		fmt.Println("================================================================================================")
+		fmt.Println("User:", user)
+		for _, issue := range issueList {
+			fmt.Println(issue.Subject)
+		}
+
+	}
 	// fmt.Println("Milestone content : ")
 	// for _, us := range milestone.UserStoryList {
 	// 	fmt.Println(us.Subject)

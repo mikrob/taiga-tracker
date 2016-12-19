@@ -14,7 +14,9 @@ type TaigaManager struct {
 }
 
 var (
-	statusMap map[string]int
+	usStatusMap     map[string]int
+	issuesStatusMap map[string]int
+	userList        map[int]string
 )
 
 //NewTaigaManager make initialization of taiga client lib
@@ -27,6 +29,8 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 	}
 	taigaManager := &TaigaManager{taigaClient: taigaClient}
 	taigaManager.GetStatusUS()
+	taigaManager.GetStatusIssues()
+	taigaManager.GetUserList()
 	return taigaManager
 }
 
@@ -37,6 +41,20 @@ func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string, projectName
 		fmt.Println(fmt.Errorf("Error while retrieving milestone"))
 	}
 	t.Milestone = &mileStone
+}
+
+//MapIssuesPerUsers retrieve issue in progress and map them per users
+func (t *TaigaManager) MapIssuesPerUsers() {
+	t.IssuesPerUsers = make(map[string][]taiga.Issue)
+	issueList, _, err := t.taigaClient.Issues.ListIssues()
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving issue list"))
+	}
+	for _, issue := range issueList {
+		if issue.Status == issuesStatusMap["In progress"] {
+			t.IssuesPerUsers[userList[issue.Assigne]] = append(t.IssuesPerUsers[userList[issue.Assigne]], *issue)
+		}
+	}
 }
 
 //RetrieveUserList make a list of user mapped as id -> fullname
@@ -54,29 +72,47 @@ func (t *TaigaManager) RetrieveUserList() (map[int]string, error) {
 	return userMap, nil
 }
 
-//GetStatusUS retrieve the users stories status kind
-func (t *TaigaManager) GetStatusUS() {
-	statusList, _, err := t.taigaClient.Issues.ListUserstoryStatuses()
-	statusMap = make(map[string]int)
+//GetStatusIssues retrieve the users stories status kind
+func (t *TaigaManager) GetStatusIssues() {
+	statusList, _, err := t.taigaClient.Issues.ListIssueStatuses()
+	issuesStatusMap = make(map[string]int)
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error while retrieving list of users"))
 	}
 	for _, status := range statusList {
-		statusMap[status.Name] = status.ID
+		issuesStatusMap[status.Name] = status.ID
+	}
+}
+
+//GetStatusUS retrieve the users stories status kind
+func (t *TaigaManager) GetStatusUS() {
+	statusList, _, err := t.taigaClient.Issues.ListUserstoryStatuses()
+	usStatusMap = make(map[string]int)
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving list of users"))
+	}
+	for _, status := range statusList {
+		usStatusMap[status.Name] = status.ID
+	}
+}
+
+//GetUserList initialize userlist
+func (t *TaigaManager) GetUserList() {
+	users, errUserList := t.RetrieveUserList()
+	if errUserList != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving list of users"))
+	} else {
+		userList = users
 	}
 }
 
 //MapStoriesPerUsers allow to make map of data with stories mapped per users
 func (t *TaigaManager) MapStoriesPerUsers() {
-	userList, errUserList := t.RetrieveUserList()
-	if errUserList != nil {
-		fmt.Println(fmt.Errorf("Error while retrieving list of users"))
-	} else {
-		t.StoriesPerUsers = make(map[string][]taiga.Userstory)
-		for _, us := range t.Milestone.UserStoryList {
-			if us.Assigne != 0 && us.Status == statusMap["In progress"] {
-				t.StoriesPerUsers[userList[us.Assigne]] = append(t.StoriesPerUsers[userList[us.Assigne]], *us)
-			}
+	t.StoriesPerUsers = make(map[string][]taiga.Userstory)
+	for _, us := range t.Milestone.UserStoryList {
+		if us.Assigne != 0 && us.Status == usStatusMap["In progress"] {
+			t.StoriesPerUsers[userList[us.Assigne]] = append(t.StoriesPerUsers[userList[us.Assigne]], *us)
 		}
 	}
+
 }
