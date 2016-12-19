@@ -158,16 +158,16 @@ func (t *TaigaManager) MapStoriesDonePerUsers(statusDone string, statusRejected 
 		if nowYear == year && nowMonth == month && nowDay == day {
 			history, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
 			if err != nil {
+				fmt.Println("Error while retrieving history", err.Error())
+			} else {
 				fmt.Println("HISTORY")
 				fmt.Printf("%-v", history)
 				fmt.Println(history.ID)
 				fmt.Println(history.Comment)
 				fmt.Println(history.Type)
-			} else {
-				fmt.Println("HISTORY IS NIL")
-			}
-			if us.Assigne != 0 && us.Status == usStatusMap[statusDone] {
-				t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
+				if us.Assigne != 0 && us.Status == usStatusMap[statusDone] {
+					t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
+				}
 			}
 		}
 	}
