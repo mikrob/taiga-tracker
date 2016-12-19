@@ -13,23 +13,30 @@ import (
 var (
 	taigaUsername = flag.String("u", "api", "taiga username")
 	taigaPassword = flag.String("p", "botsunit8075", "taiga password")
+	taigaProject  = flag.String("t", "Ufancyme", "taiga project")
 	taigaManager  *taigaclient.TaigaManager
 )
 
 func refreshDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails("0.5", "Ufancyme", ch)
+	taigaManager.GetMilestoneWithDetails("0.5", ch)
 	// ready := <-ch
 	// if ready {
 	taigaManager.MapStoriesPerUsers()
 	taigaManager.MapIssuesPerUsers()
 	// }
+
+	// usList := taigaManager.StoriesPerUsers["Mathieu Artu"]
+	// usList[0].Points
+
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title":       "BotsUnit Taiga Tracker",
+		"title":       "Work In Progress Short View",
 		"userStories": taigaManager.StoriesPerUsers,
+		"pointList":   taigaManager.PointList,
+		"roleList":    taigaManager.RoleList,
 		"issues":      taigaManager.IssuesPerUsers,
 		"time":        elapsed,
 	})
@@ -37,29 +44,14 @@ func refreshDatas(c *gin.Context) {
 
 func main() {
 	flag.Parse()
-	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword)
+	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject)
 
-	// for user, userStories := range taigaManager.StoriesPerUsers {
-	// 	fmt.Println("================================================================================================")
-	// 	fmt.Println("User : ", user)
-	// 	fmt.Println("Stories : ")
-	// 	for _, us := range userStories {
-	// 		fmt.Println(us.Subject)
-	// 	}
-	// 	fmt.Println("================================================================================================")
+	// for id, name := range taigaManager.RoleList {
+	// 	fmt.Println(fmt.Sprintf("Role ID : %d, Name : %s", id, name))
 	// }
 	//
-	// for user, issueList := range taigaManager.IssuesPerUsers {
-	// 	fmt.Println("================================================================================================")
-	// 	fmt.Println("User:", user)
-	// 	for _, issue := range issueList {
-	// 		fmt.Println(issue.Subject)
-	// 	}
-	//
-	// }
-	// fmt.Println("Milestone content : ")
-	// for _, us := range milestone.UserStoryList {
-	// 	fmt.Println(us.Subject)
+	// for id, name := range taigaManager.PointList {
+	// 	fmt.Println(fmt.Sprintf("Point ID : %d, Name : %s", id, name))
 	// }
 	router := gin.Default()
 	router.Static("/css", "./css")
