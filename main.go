@@ -17,14 +17,24 @@ func main() {
 	start := time.Now()
 	var taigaManager *taigaclient.TaigaManager
 	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword)
-	milestone, err := taigaManager.GetMilestoneWithDetails("0.6", "Ufancyme")
-	if err != nil {
-		fmt.Println("Error while retrieving milestone:", err.Error())
+	taigaManager.GetMilestoneWithDetails("0.5", "Ufancyme")
+	taigaManager.MapStoriesPerUsers()
+
+	for user, userStories := range taigaManager.StoriesPerUsers {
+		fmt.Println("================================================================================================")
+		fmt.Println("User : ", user)
+		fmt.Println("Stories : ")
+		for _, us := range userStories {
+			fmt.Println(us.Subject)
+		}
+		fmt.Println("================================================================================================")
 	}
-	fmt.Println("Milestone content : ")
-	for _, us := range milestone.UserStoryList {
-		fmt.Println(us.Subject)
-	}
+
+	taigaManager.GetStatusUS()
+	// fmt.Println("Milestone content : ")
+	// for _, us := range milestone.UserStoryList {
+	// 	fmt.Println(us.Subject)
+	// }
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 }
