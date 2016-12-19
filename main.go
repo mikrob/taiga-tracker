@@ -21,14 +21,11 @@ func demosDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
 	taigaManager.GetMilestoneWithDetails("0.5", ch)
-	ready := <-ch
-	if ready {
-		taigaManager.MapStoriesPerUsers("Ready for test")
-		taigaManager.MapIssuesPerUsers("Ready for test")
-	}
-
-	// usList := taigaManager.StoriesPerUsers["Mathieu Artu"]
-	// usList[0].Points
+	//ready := <-ch
+	//if ready {
+	taigaManager.MapStoriesPerUsers("Ready for test")
+	taigaManager.MapIssuesPerUsers("Ready for test")
+	//	}
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
@@ -42,6 +39,24 @@ func demosDatas(c *gin.Context) {
 	})
 }
 
+func demosCRDatas(c *gin.Context) {
+	start := time.Now()
+	ch := make(chan bool)
+	taigaManager.GetMilestoneWithDetails("0.5", ch)
+	taigaManager.MapStoriesDonePerUsers("Done", "In Progress")
+	elapsed := time.Since(start)
+	fmt.Printf("Took %s to run", elapsed)
+	c.HTML(http.StatusOK, "cr.tmpl", gin.H{
+		"title":       "Demo CR",
+		"userStories": taigaManager.StoriesPerUsers,
+		"pointList":   taigaManager.PointList,
+		"roleList":    taigaManager.RoleList,
+		"issues":      taigaManager.IssuesPerUsers,
+		"time":        elapsed,
+	})
+
+}
+
 func wipDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
@@ -51,9 +66,6 @@ func wipDatas(c *gin.Context) {
 	taigaManager.MapStoriesPerUsers("In progress")
 	taigaManager.MapIssuesPerUsers("In progress")
 	// }
-
-	// usList := taigaManager.StoriesPerUsers["Mathieu Artu"]
-	// usList[0].Points
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
@@ -92,6 +104,7 @@ func main() {
 
 	authorized.GET("/wip", wipDatas)
 	authorized.GET("/demo", demosDatas)
+	authorized.GET("/cr", demosCRDatas)
 	router.Run(":8080")
 
 }

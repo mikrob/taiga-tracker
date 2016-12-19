@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"strconv"
 	"taiga-gitlab/taiga"
+	"time"
 )
 
 // TaigaManager manage interactions with taiga
 type TaigaManager struct {
-	taigaClient     *taiga.Client
-	TaigaProject    string
-	Milestone       *taiga.Milestone
-	StoriesPerUsers map[string][]taiga.Userstory
-	IssuesPerUsers  map[string][]taiga.Issue
-	PointList       map[int]string
-	RoleList        map[string]string
+	taigaClient             *taiga.Client
+	TaigaProject            string
+	Milestone               *taiga.Milestone
+	StoriesPerUsers         map[string][]taiga.Userstory
+	IssuesPerUsers          map[string][]taiga.Issue
+	StoriesDonePerUsers     map[string][]taiga.Userstory
+	StoriesRejectedPerUsers map[string][]taiga.Userstory
+	IssuesDonePerUsers      map[string][]taiga.Issue
+	IssuesRejectedPerUsers  map[string][]taiga.Issue
+	PointList               map[int]string
+	RoleList                map[string]string
 }
 
 var (
@@ -138,6 +143,32 @@ func (t *TaigaManager) MapStoriesPerUsers(status string) {
 	for _, us := range t.Milestone.UserStoryList {
 		if us.Assigne != 0 && us.Status == usStatusMap[status] {
 			t.StoriesPerUsers[userList[us.Assigne]] = append(t.StoriesPerUsers[userList[us.Assigne]], *us)
+		}
+	}
+}
+
+//MapStoriesDonePerUsers make data to storie that have been done today
+func (t *TaigaManager) MapStoriesDonePerUsers(statusDone string, statusRejected string) {
+	t.StoriesPerUsers = make(map[string][]taiga.Userstory)
+	// loc, _ := time.LoadLocation("UTC")
+	nowYear, nowMonth, nowDay := time.Now().Date()
+
+	for _, us := range t.Milestone.UserStoryList {
+		year, month, day := us.LastModified.Date()
+		if nowYear == year && nowMonth == month && nowDay == day {
+			history, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
+			if err != nil {
+				fmt.Println("HISTORY")
+				fmt.Printf("%-v", history)
+				fmt.Println(history.ID)
+				fmt.Println(history.Comment)
+				fmt.Println(history.Type)
+			} else {
+				fmt.Println("HISTORY IS NIL")
+			}
+			if us.Assigne != 0 && us.Status == usStatusMap[statusDone] {
+				t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
+			}
 		}
 	}
 }
