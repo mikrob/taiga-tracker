@@ -17,14 +17,39 @@ var (
 	taigaManager  *taigaclient.TaigaManager
 )
 
-func refreshDatas(c *gin.Context) {
+func demosDatas(c *gin.Context) {
+	start := time.Now()
+	ch := make(chan bool)
+	taigaManager.GetMilestoneWithDetails("0.5", ch)
+	ready := <-ch
+	if ready {
+		taigaManager.MapStoriesPerUsers("Ready for test")
+		taigaManager.MapIssuesPerUsers("Ready for test")
+	}
+
+	// usList := taigaManager.StoriesPerUsers["Mathieu Artu"]
+	// usList[0].Points
+
+	elapsed := time.Since(start)
+	fmt.Printf("Took %s to run", elapsed)
+	c.HTML(http.StatusOK, "demo.tmpl", gin.H{
+		"title":       "Demo Short View",
+		"userStories": taigaManager.StoriesPerUsers,
+		"pointList":   taigaManager.PointList,
+		"roleList":    taigaManager.RoleList,
+		"issues":      taigaManager.IssuesPerUsers,
+		"time":        elapsed,
+	})
+}
+
+func wipDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
 	taigaManager.GetMilestoneWithDetails("0.5", ch)
 	// ready := <-ch
 	// if ready {
-	taigaManager.MapStoriesPerUsers()
-	taigaManager.MapIssuesPerUsers()
+	taigaManager.MapStoriesPerUsers("In progress")
+	taigaManager.MapIssuesPerUsers("In progress")
 	// }
 
 	// usList := taigaManager.StoriesPerUsers["Mathieu Artu"]
@@ -32,7 +57,7 @@ func refreshDatas(c *gin.Context) {
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "wip.tmpl", gin.H{
 		"title":       "Work In Progress Short View",
 		"userStories": taigaManager.StoriesPerUsers,
 		"pointList":   taigaManager.PointList,
@@ -65,7 +90,8 @@ func main() {
 
 	router.LoadHTMLGlob("templates/*")
 
-	authorized.GET("/wip", refreshDatas)
+	authorized.GET("/wip", wipDatas)
+	authorized.GET("/demo", demosDatas)
 	router.Run(":8080")
 
 }

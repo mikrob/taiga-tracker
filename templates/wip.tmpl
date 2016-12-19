@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <title>Botsunit Taiga Tracker</title>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <div class="container">
+        <h3>
+            {{ .title }}
+        </h3>
+        <p>
+            Took {{ .time }} to retrieve datas
+        </p>
+        <h3>
+            User Stories
+        </h3>
+        {{ range $user, $stories := .userStories }}
+        <h5>{{ $user }}</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th data-field="id">Tiaga Id</th>
+                    <th data-field="name">Title</th>
+                    <th data-field="price">User Story Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $index, $us := $stories }}
+                <tr>
+                    <td> {{ $us.ID }}</td>
+                    <td>{{ $us.Subject }}</td>
+                    <td>
+                        <ul>
+                        {{ range $roleId, $pointId := $us.Points }}
+                            {{ with $pointValue := index $.pointList $pointId }}
+                                {{ if ne $pointValue "?" }}
+                                <li>{{ index $.roleList $roleId }} : {{ $pointValue }}</li>
+                                {{ end }}
+                            {{ end }}
+                        {{ end }}
+                        <ul>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+        {{ end }}
+
+        <h3>
+            Issues
+        </h3>
+
+        {{ range $user, $issueList := .issues }}
+        <h5>{{ $user }}</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th data-field="id">Taiga Id</th>
+                    <th data-field="name">Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $index, $issue := $issueList }}
+                <tr>
+                    <td> {{ $issue.ID }}</td>
+                    <td>{{ $issue.Subject }}</td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+        {{ end }}
+    </div>
+
+
+</body>
+
+</html>
