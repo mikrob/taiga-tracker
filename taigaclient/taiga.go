@@ -149,22 +149,29 @@ func (t *TaigaManager) MapStoriesPerUsers(status string) {
 
 //MapStoriesDonePerUsers make data to storie that have been done today
 func (t *TaigaManager) MapStoriesDonePerUsers(statusDone string, statusRejected string) {
-	t.StoriesPerUsers = make(map[string][]taiga.Userstory)
+	t.StoriesDonePerUsers = make(map[string][]taiga.Userstory)
 	// loc, _ := time.LoadLocation("UTC")
 	nowYear, nowMonth, nowDay := time.Now().Date()
 
 	for _, us := range t.Milestone.UserStoryList {
 		year, month, day := us.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
-			history, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
+			fmt.Println("US : ", us.Subject)
+			historyEntries, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
 			if err != nil {
 				fmt.Println("Error while retrieving history", err.Error())
 			} else {
 				fmt.Println("HISTORY")
-				fmt.Printf("%-v", history)
-				fmt.Println(history.ID)
-				fmt.Println(history.Comment)
-				fmt.Println(history.Type)
+				for _, historyEntry := range historyEntries {
+					fmt.Println(historyEntry.Comment)
+					fmt.Println(historyEntry.ID)
+					fmt.Println(historyEntry.Type)
+					fmt.Println(historyEntry.CreatedAt)
+					for _, value := range historyEntry.HistoryValueList.Status {
+						fmt.Println(value)
+					}
+
+				}
 				if us.Assigne != 0 && us.Status == usStatusMap[statusDone] {
 					t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
 				}
