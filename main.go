@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"taiga_tracker/taigaclient"
+	"taiga-tracker/taigaclient"
 	"time"
 
 	"github.com/gin-gonic/gin"
