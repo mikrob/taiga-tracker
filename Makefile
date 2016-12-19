@@ -1,4 +1,4 @@
-BINARY=taiga_tracker
+BINARY=taiga-tracker
 
 PHONY: all
 
