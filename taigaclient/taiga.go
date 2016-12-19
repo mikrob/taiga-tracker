@@ -147,34 +147,119 @@ func (t *TaigaManager) MapStoriesPerUsers(status string) {
 	}
 }
 
-//MapStoriesDonePerUsers make data to storie that have been done today
-func (t *TaigaManager) MapStoriesDonePerUsers(statusDone string, statusRejected string) {
-	t.StoriesDonePerUsers = make(map[string][]taiga.Userstory)
-	// loc, _ := time.LoadLocation("UTC")
+// Sort history entries : filter the one that are status modification only, and take the latest modified today
+func getLatestHistoryEntryWithStatusModification(historyEntries []*taiga.HistoryEntry) *taiga.HistoryEntry {
+	var historyEntryResult *taiga.HistoryEntry
 	nowYear, nowMonth, nowDay := time.Now().Date()
+	for _, historyEntry := range historyEntries {
+		if historyEntry.Diff.Status != nil && len(historyEntry.Diff.Status) == 2 {
+			historyModificationYear, historyModificationMonth, historyModificationDay := historyEntry.CreatedAt.Date()
+			if historyModificationYear == nowYear && historyModificationMonth == nowMonth && historyModificationDay == nowDay {
+				if historyEntryResult == nil {
+					historyEntryResult = historyEntry
+				} else {
+					if historyEntry.CreatedAt.After(historyEntryResult.CreatedAt) {
+						historyEntryResult = historyEntry
+					}
+				}
+			}
+		}
+	}
+	return historyEntryResult
+}
 
+func (t *TaigaManager) retrieveUserStoryHistory(us taiga.Userstory) (string, string) {
+	historyEntries, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
+	if err != nil {
+		fmt.Println("Error while retrieving history", err.Error())
+	}
+	latestHistoryEntry := getLatestHistoryEntryWithStatusModification(historyEntries)
+	fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
+	toStatus := latestHistoryEntry.HistoryValueList.Status[1]
+	return fromStatus, toStatus
+}
+
+func (t *TaigaManager) retrieveIssueHistory(issue taiga.Issue) (string, string) {
+	historyEntries, _, err := t.taigaClient.Userstories.GetIssueHistory(issue.ID)
+	if err != nil {
+		fmt.Println("Error while retrieving history", err.Error())
+	}
+	latestHistoryEntry := getLatestHistoryEntryWithStatusModification(historyEntries)
+	fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
+	toStatus := latestHistoryEntry.HistoryValueList.Status[1]
+	return fromStatus, toStatus
+}
+
+//MapStoriesDonePerUsers make data to storie that have been done today
+func (t *TaigaManager) MapStoriesDonePerUsers() {
+	t.StoriesDonePerUsers = make(map[string][]taiga.Userstory)
+	nowYear, nowMonth, nowDay := time.Now().Date()
 	for _, us := range t.Milestone.UserStoryList {
 		year, month, day := us.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
-			fmt.Println("US : ", us.Subject)
-			historyEntries, _, err := t.taigaClient.Userstories.GetUserStoryHistory(us.ID)
-			if err != nil {
-				fmt.Println("Error while retrieving history", err.Error())
-			} else {
-				fmt.Println("HISTORY")
-				for _, historyEntry := range historyEntries {
-					fmt.Println(historyEntry.Comment)
-					fmt.Println(historyEntry.ID)
-					fmt.Println(historyEntry.Type)
-					fmt.Println(historyEntry.CreatedAt)
-					for _, value := range historyEntry.HistoryValueList.Status {
-						fmt.Println(value)
-					}
+			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
+			if fromStatus == "Ready for test" && toStatus == "Done" {
+				t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
+			}
+		}
+	}
+}
 
-				}
-				if us.Assigne != 0 && us.Status == usStatusMap[statusDone] {
-					t.StoriesDonePerUsers[userList[us.Assigne]] = append(t.StoriesDonePerUsers[userList[us.Assigne]], *us)
-				}
+//MapStoriesRejectedPerUsers make data to storie that have been done today
+func (t *TaigaManager) MapStoriesRejectedPerUsers() {
+	t.StoriesRejectedPerUsers = make(map[string][]taiga.Userstory)
+	nowYear, nowMonth, nowDay := time.Now().Date()
+	for _, us := range t.Milestone.UserStoryList {
+		year, month, day := us.LastModified.Date()
+		if nowYear == year && nowMonth == month && nowDay == day {
+			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
+			fmt.Println(fmt.Sprintf("US : %s, fromStatus : %s, toStatus :%s", us.Subject, fromStatus, toStatus))
+			if fromStatus == "Ready for test" && toStatus == "In progress" {
+				t.StoriesRejectedPerUsers[userList[us.Assigne]] = append(t.StoriesRejectedPerUsers[userList[us.Assigne]], *us)
+			}
+		}
+	}
+}
+
+//MapIssuesDonePerUsers map issue done per users
+func (t *TaigaManager) MapIssuesDonePerUsers() {
+	fmt.Println("MAP ISSUE DONE")
+	t.IssuesDonePerUsers = make(map[string][]taiga.Issue)
+	issueList, _, err := t.taigaClient.Issues.ListIssues()
+	nowYear, nowMonth, nowDay := time.Now().Date()
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving issue list"))
+	}
+	for _, issue := range issueList {
+		year, month, day := issue.LastModified.Date()
+		if nowYear == year && nowMonth == month && nowDay == day {
+			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
+			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
+			if fromStatus == "Ready for test" && toStatus == "Closed" {
+				t.IssuesDonePerUsers[userList[issue.Assigne]] = append(t.IssuesDonePerUsers[userList[issue.Assigne]], *issue)
+			}
+		}
+	}
+}
+
+//MapIssuesRejectedPerUsers map issue rejected per users
+func (t *TaigaManager) MapIssuesRejectedPerUsers() {
+	fmt.Println("MAP ISSUE REJECTED")
+	t.IssuesRejectedPerUsers = make(map[string][]taiga.Issue)
+	issueList, _, err := t.taigaClient.Issues.ListIssues()
+	nowYear, nowMonth, nowDay := time.Now().Date()
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving issue list"))
+	}
+	for _, issue := range issueList {
+		year, month, day := issue.LastModified.Date()
+		if nowYear == year && nowMonth == month && nowDay == day {
+			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
+			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
+			if fromStatus == "Ready for test" && toStatus == "In progress" {
+				t.IssuesRejectedPerUsers[userList[issue.Assigne]] = append(t.IssuesRejectedPerUsers[userList[issue.Assigne]], *issue)
 			}
 		}
 	}

@@ -43,16 +43,19 @@ func demosCRDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
 	taigaManager.GetMilestoneWithDetails("0.5", ch)
-	taigaManager.MapStoriesDonePerUsers("Done", "In Progress")
+	taigaManager.MapStoriesDonePerUsers()
+	taigaManager.MapStoriesRejectedPerUsers()
+	taigaManager.MapIssuesDonePerUsers()
+	taigaManager.MapIssuesRejectedPerUsers()
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "cr.tmpl", gin.H{
-		"title":       "Demo CR",
-		"userStories": taigaManager.StoriesPerUsers,
-		"pointList":   taigaManager.PointList,
-		"roleList":    taigaManager.RoleList,
-		"issues":      taigaManager.IssuesPerUsers,
-		"time":        elapsed,
+		"title":               "Demo CR",
+		"userStoriesDone":     taigaManager.StoriesDonePerUsers,
+		"userStoriesRejected": taigaManager.StoriesRejectedPerUsers,
+		"issuesDone":          taigaManager.IssuesDonePerUsers,
+		"issuesRejected":      taigaManager.IssuesRejectedPerUsers,
+		"time":                elapsed,
 	})
 
 }
