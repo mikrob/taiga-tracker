@@ -35,12 +35,13 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 }
 
 // GetMilestoneWithDetails return a full milestone detailed
-func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string, projectName string) {
+func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string, projectName string, ch chan bool) {
 	mileStone, _, err := t.taigaClient.Milestones.GetMilestoneDetails(milestoneName, projectName)
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error while retrieving milestone"))
 	}
 	t.Milestone = &mileStone
+	// ch <- true
 }
 
 //MapIssuesPerUsers retrieve issue in progress and map them per users
