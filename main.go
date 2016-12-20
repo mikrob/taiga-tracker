@@ -12,16 +12,18 @@ import (
 )
 
 var (
-	taigaUsername = flag.String("u", "api", "taiga username")
-	taigaPassword = flag.String("p", "botsunit8075", "taiga password")
-	taigaProject  = flag.String("t", "Ufancyme", "taiga project")
-	taigaManager  *taigaclient.TaigaManager
+	taigaUsername  = flag.String("l", "api", "taiga login")
+	taigaPassword  = flag.String("p", "botsunit8075", "taiga password")
+	taigaProject   = flag.String("t", "Ufancyme", "taiga project")
+	taigaURL       = flag.String("d", "https://taiga.botsunit.io", "taiga URL")
+	taigaMilestone = flag.String("m", "0.5", "taiga Milestone to watch")
+	taigaManager   *taigaclient.TaigaManager
 )
 
 func demosDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails("0.5", ch)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
 	//ready := <-ch
 	//if ready {
 	taigaManager.MapStoriesPerUsers("Ready for test")
@@ -40,10 +42,24 @@ func demosDatas(c *gin.Context) {
 	})
 }
 
+func overtakingUSDatas(c *gin.Context) {
+	start := time.Now()
+	ch := make(chan bool)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Took %s to run", elapsed)
+	c.HTML(http.StatusOK, "cr.tmpl", gin.H{
+		"title":                 "Demo CR",
+		"userStoriesOvertaking": taigaManager.StoriesDonePerUsers,
+		"time":                  elapsed,
+	})
+}
+
 func demosCRDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails("0.5", ch)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
 	taigaManager.MapStoriesDonePerUsers()
 	taigaManager.MapStoriesRejectedPerUsers()
 	taigaManager.MapIssuesDonePerUsers()
@@ -64,7 +80,7 @@ func demosCRDatas(c *gin.Context) {
 func wipDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails("0.5", ch)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
 	// ready := <-ch
 	// if ready {
 	taigaManager.MapStoriesPerUsers("In progress")
@@ -85,7 +101,7 @@ func wipDatas(c *gin.Context) {
 
 func main() {
 	flag.Parse()
-	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject)
+	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject, taigaURL)
 
 	// for id, name := range taigaManager.RoleList {
 	// 	fmt.Println(fmt.Sprintf("Role ID : %d, Name : %s", id, name))
