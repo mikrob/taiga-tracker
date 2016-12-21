@@ -46,13 +46,13 @@ func overtakingUSDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
 	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
-	taigaManager.GetOvertakingStories()
-
+	taigaManager.GetStoriesAndElapsedTime()
+	taigaManager.TimeTrackStories()
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
-	c.HTML(http.StatusOK, "cr.tmpl", gin.H{
-		"title":                 "Demo CR",
-		"userStoriesOvertaking": taigaManager.StoriesDonePerUsers,
+	c.HTML(http.StatusOK, "overtake.tmpl", gin.H{
+		"title":                 "Overtaking US",
+		"userStoriesOvertaking": taigaManager.StoriesTimeTrackedPerUsers,
 		"time":                  elapsed,
 	})
 }

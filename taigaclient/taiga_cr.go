@@ -34,8 +34,12 @@ func (t *TaigaManager) retrieveUserStoryHistory(us taiga.Userstory) (string, str
 		fmt.Println("Error while retrieving history", err.Error())
 	}
 	latestHistoryEntry := getLatestHistoryEntryWithStatusModification(historyEntries)
-	fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
-	toStatus := latestHistoryEntry.HistoryValueList.Status[1]
+	var fromStatus, toStatus string
+	if latestHistoryEntry != nil {
+		fromStatus = latestHistoryEntry.HistoryValueList.Status[0]
+		toStatus = latestHistoryEntry.HistoryValueList.Status[1]
+		return "", ""
+	}
 	return fromStatus, toStatus
 }
 
