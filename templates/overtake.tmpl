@@ -39,7 +39,7 @@
             <tbody>
                 {{ range $index, $us := $stories }}
                 <tr class="{{ $us.Color }}">
-                    <td>{{ $us.Ref }}</td>
+                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
                     <td>{{ $us.Subject }}</td>
                     <td>{{ $us.TotalPoint}}</td>
                     <td>{{ $us.ElapsedTime}}</td>

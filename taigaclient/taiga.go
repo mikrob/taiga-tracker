@@ -200,12 +200,10 @@ func (t *TaigaManager) TimeTrackStories() {
 	//roleList := t.RoleList
 	for _, usList := range t.StoriesTimeTrackedPerUsers {
 		for _, us := range usList {
-			fmt.Println("ElapsedTime ", us.ElapsedTime)
 			usTotalPoints := 0.0
 			for _, pointID := range us.Points {
 				usTotalPoints += pointListFloat[pointID]
 			}
-			fmt.Println("US TOTAL POINTS :", usTotalPoints)
 			us.TotalPoint = usTotalPoints
 			if us.ElapsedTime == 0 || usTotalPoints == 0 {
 				us.Color = "card-panel deep-orange lighten-2"

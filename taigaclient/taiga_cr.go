@@ -49,9 +49,12 @@ func (t *TaigaManager) retrieveIssueHistory(issue taiga.Issue) (string, string) 
 		fmt.Println("Error while retrieving history", err.Error())
 	}
 	latestHistoryEntry := getLatestHistoryEntryWithStatusModification(historyEntries)
-	fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
-	toStatus := latestHistoryEntry.HistoryValueList.Status[1]
-	return fromStatus, toStatus
+	if latestHistoryEntry != nil && len(latestHistoryEntry.HistoryValueList.Status) > 0 {
+		fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
+		toStatus := latestHistoryEntry.HistoryValueList.Status[1]
+		return fromStatus, toStatus
+	}
+	return "", ""
 }
 
 //MapStoriesDonePerUsers make data to storie that have been done today
@@ -102,7 +105,7 @@ func (t *TaigaManager) MapIssuesDonePerUsers() {
 		year, month, day := issue.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
-			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
+			//fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
 			if fromStatus == "Ready for test" && toStatus == "Closed" {
 				issue.AssignedUser = userList[issue.Assigne]
 				issuesDone = append(issuesDone, *issue)

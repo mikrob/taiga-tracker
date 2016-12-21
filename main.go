@@ -39,6 +39,7 @@ func demosDatas(c *gin.Context) {
 		"roleList":    taigaManager.RoleList,
 		"issues":      taigaManager.IssuesPerUsers,
 		"time":        elapsed,
+		"taigaURL":    taigaURL,
 	})
 }
 
@@ -54,6 +55,7 @@ func overtakingUSDatas(c *gin.Context) {
 		"title":                 "Overtaking US",
 		"userStoriesOvertaking": taigaManager.StoriesTimeTrackedPerUsers,
 		"time":                  elapsed,
+		"taigaURL":              taigaURL,
 	})
 }
 
@@ -74,6 +76,7 @@ func demosCRDatas(c *gin.Context) {
 		"issuesDone":          taigaManager.IssuesDonePerUsers,
 		"issuesRejected":      taigaManager.IssuesRejectedPerUsers,
 		"time":                elapsed,
+		"taigaURL":            taigaURL,
 	})
 
 }
@@ -97,6 +100,7 @@ func wipDatas(c *gin.Context) {
 		"roleList":    taigaManager.RoleList,
 		"issues":      taigaManager.IssuesPerUsers,
 		"time":        elapsed,
+		"taigaURL":    taigaURL,
 	})
 }
 
