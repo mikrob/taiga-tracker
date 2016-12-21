@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.botsunit.com/infra/taiga-tracker/taigaclient"
+	"taiga-tracker/taigaclient"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,6 +46,7 @@ func overtakingUSDatas(c *gin.Context) {
 	start := time.Now()
 	ch := make(chan bool)
 	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
+	taigaManager.GetOvertakingStories()
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
@@ -125,6 +126,7 @@ func main() {
 	authorized.GET("/wip", wipDatas)
 	authorized.GET("/demo", demosDatas)
 	authorized.GET("/cr", demosCRDatas)
+	authorized.GET("/over", overtakingUSDatas)
 	router.Run(":8080")
 
 }

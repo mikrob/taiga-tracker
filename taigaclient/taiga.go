@@ -137,13 +137,39 @@ func (t *TaigaManager) GetUserList() {
 	}
 }
 
+//getElapsedTimeAttributeId find attribute id for elapsed times
+func (t *TaigaManager) getElapsedTimeAttributeID() int {
+	customAttributes, _, err := t.taigaClient.Userstories.GetUserStoryCustomAttributes()
+	result := 1
+	if err != nil {
+		fmt.Println("Error while retrieving custom attribute list")
+	}
+	for _, ca := range customAttributes {
+		if ca.Name == "Elapsed Time" {
+			return ca.ID
+		}
+	}
+	return result
+}
+
 //GetOvertakingStories iterate over stories and detect the one that are overtaking
 func (t *TaigaManager) GetOvertakingStories() {
+	//elapsedTimeAttributeID := t.getElapsedTimeAttributeID()
+
 	t.StoriesPerUsers = make(map[string][]taiga.Userstory)
 	for _, us := range t.Milestone.UserStoryList {
 		if us.Assigne != 0 && us.Status == usStatusMap["Done"] {
 			t.StoriesPerUsers[userList[us.Assigne]] = append(t.StoriesPerUsers[userList[us.Assigne]], *us)
 			fmt.Println("US :", us.Subject)
+			attributesValues, _, err := t.taigaClient.Userstories.GetUserStoryCustomAttributeValue(us.ID)
+			if err != nil {
+				fmt.Println("Error while retrieving custom user story attributes value ", err.Error())
+			}
+			fmt.Println(attributesValues.Values)
+			// for _, attrValue := range attributesValues {
+			// 	fmt.Println(fmt.Sprintf("Story ID : %d, values : %v", attrValue.UserStoryID, attrValue.Values))
+			// }
+
 		}
 	}
 
