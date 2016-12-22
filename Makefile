@@ -9,7 +9,9 @@ get:
 	go get
 
 image:
-	docker build -t eu.gcr.io/scalezen/infra/taiga_tracker:0.1.0 .
+	cp ~/.ssh/id_rsa_jenkins .
+	docker build -t eu.gcr.io/scalezen/infra/taiga_tracker:0.1 .
+	rm -f id_rsa_jenkins
 
 all:
 	go build -o ${BINARY} main.go
