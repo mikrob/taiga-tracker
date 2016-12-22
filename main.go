@@ -115,6 +115,6 @@ func main() {
 	authorized.GET("/demo", demosDatas)
 	authorized.GET("/cr", demosCRDatas)
 	authorized.GET("/over", overtakingUSDatas)
-	router.Run(":8080")
+	router.Run(":8282")
 
 }
