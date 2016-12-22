@@ -22,6 +22,8 @@ type TaigaManager struct {
 	IssuesRejectedPerUsers     []taiga.Issue
 	PointList                  map[int]string
 	RoleList                   map[string]string
+	MilestoneList              []*taiga.Milestone
+	CurrentMileStone           string
 }
 
 var (
@@ -45,6 +47,15 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 	taigaManager.GetPoints()
 	taigaManager.GetRoles()
 	return taigaManager
+}
+
+//ListMilestones allow to list existing milestone
+func (t *TaigaManager) ListMilestones() {
+	milestoneList, _, err := t.taigaClient.Milestones.ListMilestones()
+	if err != nil {
+		fmt.Println("Error while listing milestone ", err.Error())
+	}
+	t.MilestoneList = milestoneList
 }
 
 // GetMilestoneWithDetails return a full milestone detailed

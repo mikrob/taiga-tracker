@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <title>Botsunit Taiga Tracker</title>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo">taiga-tracker</a>
+
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><b>Current Milestone : {{ .currentMilestone }} |</b></li>
+                <li><a href="/wip">Work In Progress</a></li>
+                <li><a href="/demo">Demo Content</a></li>
+                <li><a href="/cr">Demo CR</a></li>
+                <li><a href="/over">Taiga Time Tracking</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3>
+            {{ .title }}
+        </h3>
+        <p>
+            Took {{ .time }} to retrieve datas
+        </p>
+        <hr />
+        <div class="input-field">
+            <form action="/" method="post">
+                <select name="milestone">
+                  <option value="" disabled selected>Choose your option</option>
+                  {{ range $index, $milestone := .milestoneList }}
+                    <option value="{{ $milestone.Name }}">{{ $milestone.Name }}</option>
+                  {{ end }}
+                </select>
+                <label>Choose Milestone</label>
+                <input type="submit" class="btn btn-primary" value="Set Milestone" />
+            </form>
+        </div>
+    </div>
+
+    <script language="javascript">
+    $(document).ready(function() {
+      $('select').material_select();
+       $(".button-collapse").sideNav();
+    });
+    </script>
+
+
+</body>
+
+</html>

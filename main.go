@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"taiga-tracker/taigaclient"
@@ -95,6 +96,35 @@ func wipDatas(c *gin.Context) {
 	})
 }
 
+func indexMenu(c *gin.Context) {
+	start := time.Now()
+	taigaManager.ListMilestones()
+	elapsed := time.Since(start)
+	fmt.Printf("Took %s to run", elapsed)
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"title":         "Taiga Tracker",
+		"milestoneList": taigaManager.MilestoneList,
+		"time":          elapsed,
+		"taigaURL":      taigaURL,
+	})
+}
+
+func postMilestone(c *gin.Context) {
+	start := time.Now()
+	milestone := c.PostForm("milestone")
+	milestone = strings.TrimSpace(milestone)
+	taigaManager.CurrentMileStone = milestone
+	taigaManager.ListMilestones()
+	elapsed := time.Since(start)
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"title":            "Taiga Tracker",
+		"currentMilestone": taigaManager.CurrentMileStone,
+		"time":             elapsed,
+		"milestoneList":    taigaManager.MilestoneList,
+		"taigaURL":         taigaURL,
+	})
+}
+
 func main() {
 	flag.Parse()
 	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject, taigaURL)
@@ -115,6 +145,8 @@ func main() {
 	authorized.GET("/demo", demosDatas)
 	authorized.GET("/cr", demosCRDatas)
 	authorized.GET("/over", overtakingUSDatas)
+	authorized.GET("/", indexMenu)
+	authorized.POST("/", postMilestone)
 	router.Run(":8282")
 
 }
