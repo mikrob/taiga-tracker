@@ -48,13 +48,12 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 }
 
 // GetMilestoneWithDetails return a full milestone detailed
-func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string, ch chan bool) {
+func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string) {
 	mileStone, _, err := t.taigaClient.Milestones.GetMilestoneDetails(milestoneName, t.TaigaProject)
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error while retrieving milestone"))
 	}
 	t.Milestone = &mileStone
-	// ch <- true
 }
 
 //GetRoles allow to retrieve role list

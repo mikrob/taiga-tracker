@@ -7,6 +7,15 @@ import (
 	"gitlab.botsunit.com/infra/taiga-gitlab/taiga"
 )
 
+const (
+	StatusDoneUS          = "Done"
+	StatusDoneIssue       = "Closed"
+	StatusReadyUS         = "Ready for test"
+	StatusReadyIssue      = "Ready for test"
+	StatusInProgressUS    = "In progress"
+	StatusInProgressIssue = "In progress"
+)
+
 // Sort history entries : filter the one that are status modification only, and take the latest modified today
 func getLatestHistoryEntryWithStatusModification(historyEntries []*taiga.HistoryEntry) *taiga.HistoryEntry {
 	var historyEntryResult *taiga.HistoryEntry
@@ -38,9 +47,9 @@ func (t *TaigaManager) retrieveUserStoryHistory(us taiga.Userstory) (string, str
 	if latestHistoryEntry != nil {
 		fromStatus = latestHistoryEntry.HistoryValueList.Status[0]
 		toStatus = latestHistoryEntry.HistoryValueList.Status[1]
-		return "", ""
+		return fromStatus, toStatus
 	}
-	return fromStatus, toStatus
+	return "", ""
 }
 
 func (t *TaigaManager) retrieveIssueHistory(issue taiga.Issue) (string, string) {
@@ -49,6 +58,7 @@ func (t *TaigaManager) retrieveIssueHistory(issue taiga.Issue) (string, string) 
 		fmt.Println("Error while retrieving history", err.Error())
 	}
 	latestHistoryEntry := getLatestHistoryEntryWithStatusModification(historyEntries)
+
 	if latestHistoryEntry != nil && len(latestHistoryEntry.HistoryValueList.Status) > 0 {
 		fromStatus := latestHistoryEntry.HistoryValueList.Status[0]
 		toStatus := latestHistoryEntry.HistoryValueList.Status[1]
@@ -65,7 +75,7 @@ func (t *TaigaManager) MapStoriesDonePerUsers() {
 		year, month, day := us.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
-			if fromStatus == "Ready for test" && toStatus == "Done" {
+			if fromStatus == StatusReadyUS && toStatus == StatusDoneUS {
 				us.AssignedUser = userList[us.Assigne]
 				storiesDones = append(storiesDones, *us)
 			}
@@ -82,8 +92,7 @@ func (t *TaigaManager) MapStoriesRejectedPerUsers() {
 		year, month, day := us.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
-			fmt.Println(fmt.Sprintf("US : %s, fromStatus : %s, toStatus :%s", us.Subject, fromStatus, toStatus))
-			if fromStatus == "Ready for test" && toStatus == "In progress" {
+			if fromStatus == StatusReadyUS && toStatus == StatusInProgressUS {
 				us.AssignedUser = userList[us.Assigne]
 				storiesRejected = append(storiesRejected, *us)
 			}
@@ -105,8 +114,7 @@ func (t *TaigaManager) MapIssuesDonePerUsers() {
 		year, month, day := issue.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
-			//fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
-			if fromStatus == "Ready for test" && toStatus == "Closed" {
+			if fromStatus == StatusReadyIssue && toStatus == StatusDoneIssue {
 				issue.AssignedUser = userList[issue.Assigne]
 				issuesDone = append(issuesDone, *issue)
 			}
@@ -128,8 +136,7 @@ func (t *TaigaManager) MapIssuesRejectedPerUsers() {
 		year, month, day := issue.LastModified.Date()
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveIssueHistory(*issue)
-			fmt.Println(fmt.Sprintf("Issue : %s, FromStatus : %s, toStatus : %s", issue.Subject, fromStatus, toStatus))
-			if fromStatus == "Ready for test" && toStatus == "In progress" {
+			if fromStatus == StatusReadyIssue && toStatus == StatusInProgressIssue {
 				issue.AssignedUser = userList[issue.Assigne]
 				issuesRejected = append(issuesRejected, *issue)
 			}

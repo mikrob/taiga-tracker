@@ -58,7 +58,7 @@
             <tbody>
                 {{ range $index, $us := .userStoriesRejected }}
                 <tr>
-                    <td> {{ $us.ID }}</td>
+                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
                     <td>{{ $us.Subject }}</td>
                     <td>{{ $us.AssignedUser }}</td>
                 </tr>
@@ -82,7 +82,7 @@
             <tbody>
                 {{ range $index, $issue := .issuesDone }}
                 <tr>
-                    <td> {{ $issue.ID }}</td>
+                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
                     <td>{{ $issue.Subject }}</td>
                     <td>{{ $issue.AssignedUser }}</td>
                 </tr>

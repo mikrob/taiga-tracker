@@ -22,13 +22,10 @@ var (
 
 func demosDatas(c *gin.Context) {
 	start := time.Now()
-	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
-	//ready := <-ch
-	//if ready {
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
+
 	taigaManager.MapStoriesPerUsers("Ready for test")
 	taigaManager.MapIssuesPerUsers("Ready for test")
-	//	}
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
@@ -45,8 +42,7 @@ func demosDatas(c *gin.Context) {
 
 func overtakingUSDatas(c *gin.Context) {
 	start := time.Now()
-	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
 	taigaManager.GetStoriesAndElapsedTime()
 	taigaManager.TimeTrackStories()
 	elapsed := time.Since(start)
@@ -61,8 +57,7 @@ func overtakingUSDatas(c *gin.Context) {
 
 func demosCRDatas(c *gin.Context) {
 	start := time.Now()
-	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
 	taigaManager.MapStoriesDonePerUsers()
 	taigaManager.MapStoriesRejectedPerUsers()
 	taigaManager.MapIssuesDonePerUsers()
@@ -83,13 +78,9 @@ func demosCRDatas(c *gin.Context) {
 
 func wipDatas(c *gin.Context) {
 	start := time.Now()
-	ch := make(chan bool)
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone, ch)
-	// ready := <-ch
-	// if ready {
+	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
 	taigaManager.MapStoriesPerUsers("In progress")
 	taigaManager.MapIssuesPerUsers("In progress")
-	// }
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
@@ -108,13 +99,6 @@ func main() {
 	flag.Parse()
 	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject, taigaURL)
 
-	// for id, name := range taigaManager.RoleList {
-	// 	fmt.Println(fmt.Sprintf("Role ID : %d, Name : %s", id, name))
-	// }
-	//
-	// for id, name := range taigaManager.PointList {
-	// 	fmt.Println(fmt.Sprintf("Point ID : %d, Name : %s", id, name))
-	// }
 	router := gin.Default()
 	router.Static("/css", "./css")
 	router.Static("/js", "./js")
