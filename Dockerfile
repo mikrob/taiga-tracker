@@ -8,6 +8,6 @@ RUN rm /tmp/id_rsa_jenkins
 
 COPY . /go/src/taiga-tracker
 WORKDIR /go/src/taiga-tracker
-EXPOSE 8080
+EXPOSE 8282
 RUN go get -v && go build
 CMD ["taiga-tracker"]
