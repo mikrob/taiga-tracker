@@ -13,55 +13,47 @@ import (
 )
 
 var (
-	taigaUsername  = flag.String("l", "api", "taiga login")
-	taigaPassword  = flag.String("p", "botsunit8075", "taiga password")
-	taigaProject   = flag.String("t", "Ufancyme", "taiga project")
-	taigaURL       = flag.String("d", "https://taiga.botsunit.io", "taiga URL")
-	taigaMilestone = flag.String("m", "0.5", "taiga Milestone to watch")
-	taigaManager   *taigaclient.TaigaManager
+	taigaUsername = flag.String("l", "api", "taiga login")
+	taigaPassword = flag.String("p", "botsunit8075", "taiga password")
+	taigaProject  = flag.String("t", "Ufancyme", "taiga project")
+	taigaURL      = flag.String("d", "https://taiga.botsunit.io", "taiga URL")
+	taigaManager  *taigaclient.TaigaManager
 )
-
-// func createMyRender() multitemplate.Render {
-// 	r := multitemplate.New()
-// 	r.AddFromFiles("wip", "templates/base.tmpl", "templates/wip.tmpl")
-// 	r.AddFromFiles("demo", "templates/base.tmpl", "templates/demo.tmpl")
-// 	r.AddFromFiles("cr", "templates/base.tmpl", "templates/cr.tmpl")
-// 	r.AddFromFiles("over", "templates/base.tmpl", "templates/overtake.tmpl")
-// 	r.AddFromFiles("index", "templates/base.tmpl", "templates/index.tmpl")
-//
-// 	return r
-// }
 
 func demosDatas(c *gin.Context) {
 	start := time.Now()
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
+	taigaManager.GetMilestoneWithDetails()
 
 	taigaManager.MapStoriesPerUsers("Ready for test")
 	taigaManager.MapIssuesPerUsers("Ready for test")
+	fmt.Println("DEMOS CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "demo.tmpl", gin.H{
-		"title":       "Demo Short View",
-		"userStories": taigaManager.StoriesPerUsers,
-		"pointList":   taigaManager.PointList,
-		"roleList":    taigaManager.RoleList,
-		"issues":      taigaManager.IssuesPerUsers,
-		"time":        elapsed,
-		"taigaURL":    taigaURL,
+		"title":            "Demo Short View",
+		"userStories":      taigaManager.StoriesPerUsers,
+		"pointList":        taigaManager.PointList,
+		"roleList":         taigaManager.RoleList,
+		"issues":           taigaManager.IssuesPerUsers,
+		"currentMilestone": taigaManager.CurrentMileStone,
+		"time":             elapsed,
+		"taigaURL":         taigaURL,
 	})
 }
 
 func overtakingUSDatas(c *gin.Context) {
 	start := time.Now()
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
+	taigaManager.GetMilestoneWithDetails()
 	taigaManager.GetStoriesAndElapsedTime()
 	taigaManager.TimeTrackStories()
 	elapsed := time.Since(start)
+	fmt.Println("OVER CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "overtake.tmpl", gin.H{
 		"title":                 "Overtaking US",
 		"userStoriesOvertaking": taigaManager.StoriesTimeTrackedPerUsers,
+		"currentMilestone":      taigaManager.CurrentMileStone,
 		"time":                  elapsed,
 		"taigaURL":              taigaURL,
 	})
@@ -69,7 +61,7 @@ func overtakingUSDatas(c *gin.Context) {
 
 func demosCRDatas(c *gin.Context) {
 	start := time.Now()
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
+	taigaManager.GetMilestoneWithDetails()
 	taigaManager.MapStoriesDonePerUsers()
 	taigaManager.MapStoriesRejectedPerUsers()
 	taigaManager.MapIssuesDonePerUsers()
@@ -82,6 +74,7 @@ func demosCRDatas(c *gin.Context) {
 		"userStoriesRejected": taigaManager.StoriesRejectedPerUsers,
 		"issuesDone":          taigaManager.IssuesDonePerUsers,
 		"issuesRejected":      taigaManager.IssuesRejectedPerUsers,
+		"currentMilestone":    taigaManager.CurrentMileStone,
 		"time":                elapsed,
 		"taigaURL":            taigaURL,
 	})
@@ -90,20 +83,23 @@ func demosCRDatas(c *gin.Context) {
 
 func wipDatas(c *gin.Context) {
 	start := time.Now()
-	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
+	taigaManager.GetMilestoneWithDetails()
 	taigaManager.MapStoriesPerUsers("In progress")
 	taigaManager.MapIssuesPerUsers("In progress")
+
+	fmt.Println("WIP CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "wip.tmpl", gin.H{
-		"title":       "Work In Progress Short View",
-		"userStories": taigaManager.StoriesPerUsers,
-		"pointList":   taigaManager.PointList,
-		"roleList":    taigaManager.RoleList,
-		"issues":      taigaManager.IssuesPerUsers,
-		"time":        elapsed,
-		"taigaURL":    taigaURL,
+		"title":            "Work In Progress Short View",
+		"userStories":      taigaManager.StoriesPerUsers,
+		"pointList":        taigaManager.PointList,
+		"roleList":         taigaManager.RoleList,
+		"issues":           taigaManager.IssuesPerUsers,
+		"currentMilestone": taigaManager.CurrentMileStone,
+		"time":             elapsed,
+		"taigaURL":         taigaURL,
 	})
 }
 
@@ -112,11 +108,13 @@ func indexMenu(c *gin.Context) {
 	taigaManager.ListMilestones()
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
+	fmt.Println("GET INDEX CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title":         "Taiga Tracker",
-		"milestoneList": taigaManager.MilestoneList,
-		"time":          elapsed,
-		"taigaURL":      taigaURL,
+		"title":            "Taiga Tracker",
+		"milestoneList":    taigaManager.MilestoneList,
+		"currentMilestone": taigaManager.CurrentMileStone,
+		"time":             elapsed,
+		"taigaURL":         taigaURL,
 	})
 }
 
@@ -126,6 +124,7 @@ func postMilestone(c *gin.Context) {
 	milestone = strings.TrimSpace(milestone)
 	taigaManager.CurrentMileStone = milestone
 	taigaManager.ListMilestones()
+	fmt.Println("POST INDEX CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 	elapsed := time.Since(start)
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title":            "Taiga Tracker",

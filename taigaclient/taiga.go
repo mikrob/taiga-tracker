@@ -59,7 +59,11 @@ func (t *TaigaManager) ListMilestones() {
 }
 
 // GetMilestoneWithDetails return a full milestone detailed
-func (t *TaigaManager) GetMilestoneWithDetails(milestoneName string) {
+func (t *TaigaManager) GetMilestoneWithDetails() {
+	milestoneName := t.CurrentMileStone
+	if milestoneName == "" {
+		milestoneName = "0.6"
+	}
 	mileStone, _, err := t.taigaClient.Milestones.GetMilestoneDetails(milestoneName, t.TaigaProject)
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error while retrieving milestone"))
