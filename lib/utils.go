@@ -1,10 +1,20 @@
 package lib
 
-import "taiga-gitlab/taiga"
+import "gitlab.botsunit.com/infra/taiga-gitlab/taiga"
 
 //AllPredicate allow to filter a collection with a given function predicate
 func AllPredicate(vs []bool, f func(bool) bool) bool {
 	for _, v := range vs {
+		if !f(v) {
+			return false
+		}
+	}
+	return true
+}
+
+//AllTaskSameStatus allow to verify with a given func that all task have same status
+func AllTaskSameStatus(taskList []*taiga.Task, f func(*taiga.Task) bool) bool {
+	for _, v := range taskList {
 		if !f(v) {
 			return false
 		}

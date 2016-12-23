@@ -1,0 +1,30 @@
+{{template "header.tmpl" .}}
+
+<h3>
+    {{ .title }}
+</h3>
+<p>
+    Took {{ .time }} to retrieve datas
+</p>
+
+<h4><i class="medium material-icons">error</i>US that need to be synced to tasks :</h4>
+<table>
+        <thead>
+            <tr>
+                <th data-field="id">Taiga Id</th>
+                <th data-field="name">Title</th>
+                <th data-field="price">User</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range $index, $us := $.usListSync }}
+            <tr>
+                <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
+                <td>{{ $us.Subject }}</td>
+                <td {{ if eq $us.AssignedUser "Not Assigned" }} class="red-text darken-4" {{end}}>{{ if eq $us.AssignedUser "Not Assigned" }}<i class="tiny material-icons">error</i>{{end}}&nbsp;{{ $us.AssignedUser }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+{{template "footer.tmpl"}}

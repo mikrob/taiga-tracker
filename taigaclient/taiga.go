@@ -3,6 +3,7 @@ package taigaclient
 import (
 	"fmt"
 	"strconv"
+	"taiga-tracker/lib"
 
 	"gitlab.botsunit.com/infra/taiga-gitlab/taiga"
 )
@@ -14,6 +15,10 @@ const (
 	NotAssigned = "Not Assigned"
 	//ReadyToTest to test ready to test
 	ReadyToTest = "Ready for test"
+	// Closed closed
+	Closed = "Closed"
+	//Done done
+	Done = "Done"
 	//InProgress in progress
 	InProgress = "In progress"
 )
@@ -40,6 +45,7 @@ type TaigaManager struct {
 
 var (
 	usStatusMap     map[string]int
+	taskStatusMap   map[string]int
 	issuesStatusMap map[string]int
 	userList        map[int]string
 )
@@ -54,6 +60,7 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 	}
 	taigaManager := &TaigaManager{taigaClient: taigaClient, TaigaProject: *taigaProject}
 	taigaManager.GetStatusUS()
+	taigaManager.GetStatusTasks()
 	taigaManager.GetStatusIssues()
 	taigaManager.GetUserList()
 	taigaManager.GetPoints()
@@ -156,6 +163,18 @@ func (t *TaigaManager) GetStatusUS() {
 	}
 }
 
+//GetStatusTasks retrieve the users stories status kind
+func (t *TaigaManager) GetStatusTasks() {
+	statusList, _, err := t.taigaClient.Tasks.ListTaskStatuses()
+	taskStatusMap = make(map[string]int)
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error while retrieving list of users"))
+	}
+	for _, status := range statusList {
+		taskStatusMap[status.Name] = status.ID
+	}
+}
+
 //GetUserList initialize userlist
 func (t *TaigaManager) GetUserList() {
 	users, errUserList := t.RetrieveUserList()
@@ -164,4 +183,59 @@ func (t *TaigaManager) GetUserList() {
 	} else {
 		userList = users
 	}
+}
+
+//SynchronizeMilestone allow to synchronize a milestone
+func (t *TaigaManager) SynchronizeMilestone() ([]*taiga.Userstory, error) {
+
+	var usListModified []*taiga.Userstory
+
+	taskList, _, err := t.taigaClient.Tasks.ListTasks()
+	if err != nil {
+		fmt.Println("Error while retrieving task list", err.Error())
+		return nil, err
+	}
+	taskPerStoryID := make(map[int][]*taiga.Task)
+	for _, task := range taskList {
+		taskPerStoryID[task.UserstoryID] = append(taskPerStoryID[task.UserstoryID], task)
+	}
+
+	// for usID, tasks := range taskPerStoryID {
+	// 	fmt.Println("US ID : ", usID)
+	// 	for _, task := range tasks {
+	// 		fmt.Println(task.Subject)
+	//
+	// 	}
+	// }
+
+	for _, us := range t.Milestone.UserStoryList {
+		us.TaskList = taskPerStoryID[us.ID]
+		// fmt.Println(fmt.Sprintf("Processing US : %s with ID %d", us.Subject, us.ID))
+		// fmt.Println("US first task : ", us.TaskList[0].Subject)
+		if us.TaskList != nil && len(us.TaskList) != 0 {
+			allReadyForTest := lib.AllTaskSameStatus(us.TaskList, func(t *taiga.Task) bool {
+				return t.Status == taskStatusMap[ReadyToTest]
+			})
+			allDone := lib.AllTaskSameStatus(us.TaskList, func(t *taiga.Task) bool {
+				return t.Status == taskStatusMap[Closed]
+			})
+			if allDone || allReadyForTest {
+				assign := ""
+				if us.Assigne == 0 || userList[us.Assigne] == "" {
+					assign = NotAssigned
+				} else {
+					assign = userList[us.Assigne]
+				}
+				us.AssignedUser = assign
+			}
+			if allDone && (us.Status != usStatusMap[Done]) {
+				usListModified = append(usListModified, us)
+			}
+			if allReadyForTest && (us.Status != usStatusMap[ReadyToTest]) {
+				usListModified = append(usListModified, us)
+			}
+		}
+
+	}
+	return usListModified, nil
 }
