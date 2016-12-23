@@ -1,22 +1,25 @@
 {{template "header.tmpl" .}}
 
 
-<h3>
-    {{ .title }}
-</h3>
+<h1>Welcome to taiga tracker</h1>
 <p>
     Took {{ .time }} to retrieve datas
 </p>
+<br />
 <hr />
+<br />
+
+
+
 <div class="input-field">
     <form action="/" method="post">
         <select name="milestone">
-          <option value="" disabled selected>Choose your option</option>
+          <option value="" disabled selected>Choose your milestone</option>
           {{ range $index, $milestone := .milestoneList }}
             <option value="{{ $milestone.Name }}">{{ $milestone.Name }}</option>
           {{ end }}
         </select>
-        <label>Choose Milestone</label>
+        <label>Choose A Milestone</label>
         <input type="submit" class="btn btn-primary" value="Set Milestone" />
     </form>
 </div>
