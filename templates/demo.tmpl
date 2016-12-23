@@ -8,18 +8,18 @@
         <h3>
             User Stories
         </h3>
-        {{ range $user, $stories := .userStories }}
-        <b>{{ $user }}</b>
+
         <table>
             <thead>
                 <tr>
                     <th data-field="id">Taiga Id</th>
                     <th data-field="name">Title</th>
-                    <th data-field="price">User Story Points</th>
+                    <th data-field="price">Points</th>
+                    <th data-field="price">User</th>
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $us := $stories }}
+                {{ range $index, $us := $.userStories }}
                 <tr>
                     <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
                     <td>{{ $us.Subject }}</td>
@@ -34,33 +34,32 @@
                         {{ end }}
                         <ul>
                     </td>
+                    <td>{{ $us.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
 
         <h3>
             Issues
         </h3>
-
-        {{ range $user, $issueList := .issues }}
-        <b>{{ $user }}</b>
         <table>
             <thead>
                 <tr>
                     <th data-field="id">Taiga Id</th>
                     <th data-field="name">Title</th>
+                    <th data-field="user">User</th>
                 </tr>
             </thead>
             <tbody>
-                {{ range $index, $issue := $issueList }}
+                {{ range $index, $issue := .issues }}
                 <tr>
                     <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
                     <td>{{ $issue.Subject }}</td>
+                    <td>{{ $issue.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>
         </table>
-        {{ end }}
+
 {{template "footer.tmpl"}}

@@ -8,7 +8,14 @@ import (
 )
 
 const (
+	// DefaultMilestone is the default choosen milestone
 	DefaultMilestone = "0.6"
+	//NotAssigned is the text used to represent an issue or story not Assigned
+	NotAssigned = "Not Assigned"
+	//ReadyToTest to test ready to test
+	ReadyToTest = "Ready for test"
+	//InProgress in progress
+	InProgress = "In progress"
 )
 
 // TaigaManager manage interactions with taiga
@@ -16,13 +23,15 @@ type TaigaManager struct {
 	taigaClient                *taiga.Client
 	TaigaProject               string
 	Milestone                  *taiga.Milestone
-	StoriesPerUsers            map[string][]taiga.Userstory
-	StoriesTimeTrackedPerUsers map[string][]*taiga.Userstory
-	IssuesPerUsers             map[string][]taiga.Issue
-	StoriesDonePerUsers        []taiga.Userstory
-	StoriesRejectedPerUsers    []taiga.Userstory
-	IssuesDonePerUsers         []taiga.Issue
-	IssuesRejectedPerUsers     []taiga.Issue
+	StoriesPerUsers            map[string][]taiga.Userstory  // wip
+	IssuesPerUsers             map[string][]taiga.Issue      // wip
+	StoriesDemos               []taiga.Userstory             // demo
+	IssuesDemos                []taiga.Issue                 // demo
+	StoriesDonePerUsers        []taiga.Userstory             // cr
+	StoriesRejectedPerUsers    []taiga.Userstory             // cr
+	IssuesDonePerUsers         []taiga.Issue                 // cr
+	IssuesRejectedPerUsers     []taiga.Issue                 // cr
+	StoriesTimeTrackedPerUsers map[string][]*taiga.Userstory // over
 	PointList                  map[int]string
 	RoleList                   map[string]string
 	MilestoneList              []*taiga.Milestone

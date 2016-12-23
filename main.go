@@ -24,18 +24,17 @@ func demosDatas(c *gin.Context) {
 	start := time.Now()
 	taigaManager.GetMilestoneWithDetails()
 
-	taigaManager.MapStoriesPerUsers("Ready for test")
-	taigaManager.MapIssuesPerUsers("Ready for test")
-	fmt.Println("DEMOS CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
+	taigaManager.MapStoriesDemos()
+	taigaManager.MapIssuesDemos()
 
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "demo.tmpl", gin.H{
 		"title":            "Demo Short View",
-		"userStories":      taigaManager.StoriesPerUsers,
+		"userStories":      taigaManager.StoriesDemos,
 		"pointList":        taigaManager.PointList,
 		"roleList":         taigaManager.RoleList,
-		"issues":           taigaManager.IssuesPerUsers,
+		"issues":           taigaManager.IssuesDemos,
 		"currentMilestone": taigaManager.CurrentMileStone,
 		"time":             elapsed,
 		"taigaURL":         taigaURL,
@@ -48,7 +47,6 @@ func overtakingUSDatas(c *gin.Context) {
 	taigaManager.GetStoriesAndElapsedTime()
 	taigaManager.TimeTrackStories()
 	elapsed := time.Since(start)
-	fmt.Println("OVER CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "overtake.tmpl", gin.H{
 		"title":                 "Overtaking US",
@@ -84,8 +82,8 @@ func demosCRDatas(c *gin.Context) {
 func wipDatas(c *gin.Context) {
 	start := time.Now()
 	taigaManager.GetMilestoneWithDetails()
-	taigaManager.MapStoriesPerUsers("In progress")
-	taigaManager.MapIssuesPerUsers("In progress")
+	taigaManager.MapStoriesWipPerUsers()
+	taigaManager.MapIssuesWipPerUsers()
 
 	fmt.Println("WIP CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
 

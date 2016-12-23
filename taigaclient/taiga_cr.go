@@ -8,11 +8,17 @@ import (
 )
 
 const (
-	StatusDoneUS          = "Done"
-	StatusDoneIssue       = "Closed"
-	StatusReadyUS         = "Ready for test"
-	StatusReadyIssue      = "Ready for test"
-	StatusInProgressUS    = "In progress"
+	//StatusDoneUS represent the done status
+	StatusDoneUS = "Done"
+	//StatusDoneIssue closed
+	StatusDoneIssue = "Closed"
+	//StatusReadyUS represent statusReady
+	StatusReadyUS = "Ready for test"
+	//StatusReadyIssue represent statusReady
+	StatusReadyIssue = "Ready for test"
+	//StatusInProgressUS in progress
+	StatusInProgressUS = "In progress"
+	//StatusInProgressIssue in progress
 	StatusInProgressIssue = "In progress"
 )
 
