@@ -7,7 +7,7 @@
     User Stories
 </h3>
 {{ range $user, $stories := .userStories }}
-<h5>{{ $user }}</h5>
+{{ if eq $user "Not Assigned" }}<i class="small material-icons">error</i>{{end}}&nbsp;<h5 style="display:inline-block;" {{ if eq $user "Not Assigned" }} class="red-text darken-4" {{end}}>{{ $user }}</h5>
 <table>
     <thead>
         <tr>
@@ -43,7 +43,7 @@
 </h3>
 
 {{ range $user, $issueList := .issues }}
-<h5>{{ $user }}</h5>
+{{ if eq $user "Not Assigned" }}<i class="small material-icons">error</i>{{end}}&nbsp;<h5 style="display:inline-block;" {{ if eq $user "Not Assigned" }} class="red-text darken-4" {{end}}>{{ $user }}</h5>
 <table>
     <thead>
         <tr>

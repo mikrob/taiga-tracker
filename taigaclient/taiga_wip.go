@@ -10,8 +10,14 @@ import (
 func (t *TaigaManager) MapStoriesPerUsers(status string) {
 	t.StoriesPerUsers = make(map[string][]taiga.Userstory)
 	for _, us := range t.Milestone.UserStoryList {
-		if us.Assigne != 0 && us.Status == usStatusMap[status] {
-			t.StoriesPerUsers[userList[us.Assigne]] = append(t.StoriesPerUsers[userList[us.Assigne]], *us)
+		if us.Status == usStatusMap[status] {
+			assign := ""
+			if us.Assigne == 0 || userList[us.Assigne] == "" {
+				assign = "Not Assigned"
+			} else {
+				assign = userList[us.Assigne]
+			}
+			t.StoriesPerUsers[assign] = append(t.StoriesPerUsers[assign], *us)
 		}
 	}
 }
@@ -25,7 +31,13 @@ func (t *TaigaManager) MapIssuesPerUsers(status string) {
 	}
 	for _, issue := range issueList {
 		if issue.Status == issuesStatusMap[status] {
-			t.IssuesPerUsers[userList[issue.Assigne]] = append(t.IssuesPerUsers[userList[issue.Assigne]], *issue)
+			assign := ""
+			if issue.Assigne == 0 || userList[issue.Assigne] == "" {
+				assign = "Not Assigned"
+			} else {
+				assign = userList[issue.Assigne]
+			}
+			t.IssuesPerUsers[assign] = append(t.IssuesPerUsers[assign], *issue)
 		}
 	}
 }
