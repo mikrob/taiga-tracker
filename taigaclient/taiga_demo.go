@@ -1,9 +1,14 @@
 package taigaclient
 
-import "fmt"
+import (
+	"fmt"
+
+	"gitlab.botsunit.com/infra/taiga-gitlab/taiga"
+)
 
 //MapStoriesDemos allow to make map of data with stories mapped per users
 func (t *TaigaManager) MapStoriesDemos() {
+	t.StoriesDemos = make([]taiga.Userstory, 0)
 	for _, us := range t.Milestone.UserStoryList {
 		if us.Status == usStatusMap[ReadyToTest] {
 			assign := ""
@@ -20,6 +25,7 @@ func (t *TaigaManager) MapStoriesDemos() {
 
 //MapIssuesDemos retrieve issue in progress and map them per users
 func (t *TaigaManager) MapIssuesDemos() {
+	t.IssuesDemos = make([]taiga.Issue, 0)
 	issueList, _, err := t.taigaClient.Issues.ListIssues()
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error while retrieving issue list"))

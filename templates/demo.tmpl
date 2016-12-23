@@ -34,7 +34,7 @@
                         {{ end }}
                         <ul>
                     </td>
-                    <td>{{ $us.AssignedUser }}</td>
+                    <td {{ if eq $us.AssignedUser "Not Assigned" }} class="red-text darken-4" {{end}}>{{ if eq $us.AssignedUser "Not Assigned" }}<i class="tiny material-icons">error</i>{{end}}&nbsp;{{ $us.AssignedUser }}</td>
                 </tr>
                 {{ end }}
             </tbody>

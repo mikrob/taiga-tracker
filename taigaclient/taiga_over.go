@@ -48,7 +48,14 @@ func (t *TaigaManager) GetStoriesAndElapsedTime() {
 	t.StoriesTimeTrackedPerUsers = make(map[string][]*taiga.Userstory)
 	var wg sync.WaitGroup
 	for idx, us := range t.Milestone.UserStoryList {
-		if us.Assigne != 0 && us.Status == usStatusMap["Done"] {
+		if us.Status == usStatusMap["Done"] {
+			assign := ""
+			if us.Assigne == 0 || userList[us.Assigne] == "" {
+				assign = NotAssigned
+			} else {
+				assign = userList[us.Assigne]
+			}
+			us.AssignedUser = assign
 			t.StoriesTimeTrackedPerUsers[userList[us.Assigne]] = append(t.StoriesTimeTrackedPerUsers[userList[us.Assigne]], us)
 			wg.Add(1)
 			go t.GetAttributeValue(us, elapsedTimeAttributeID, &wg, idx)

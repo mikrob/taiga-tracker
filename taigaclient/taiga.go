@@ -64,7 +64,7 @@ func (t *TaigaManager) NewTaigaManager(taigaUsername *string, taigaPassword *str
 //ListMilestones allow to list existing milestone
 func (t *TaigaManager) ListMilestones() {
 	milestoneList, _, err := t.taigaClient.Milestones.ListMilestones()
-	t.CurrentMileStone = DefaultMilestone
+	//t.CurrentMileStone = DefaultMilestone
 	if err != nil {
 		fmt.Println("Error while listing milestone ", err.Error())
 	}

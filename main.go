@@ -28,7 +28,8 @@ func demosDatas(c *gin.Context) {
 	taigaManager.MapIssuesDemos()
 
 	elapsed := time.Since(start)
-	fmt.Printf("Took %s to run", elapsed)
+	fmt.Println("DEMOS CURRENT MILE STONE", taigaManager.CurrentMileStone)
+	fmt.Printf("Took %s to run \n", elapsed)
 	c.HTML(http.StatusOK, "demo.tmpl", gin.H{
 		"title":            "Demo Short View",
 		"userStories":      taigaManager.StoriesDemos,
@@ -46,6 +47,7 @@ func overtakingUSDatas(c *gin.Context) {
 	taigaManager.GetMilestoneWithDetails()
 	taigaManager.GetStoriesAndElapsedTime()
 	taigaManager.TimeTrackStories()
+	fmt.Println("OVER CURRENT MILE STONE", taigaManager.CurrentMileStone)
 	elapsed := time.Since(start)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "overtake.tmpl", gin.H{
@@ -65,6 +67,7 @@ func demosCRDatas(c *gin.Context) {
 	taigaManager.MapIssuesDonePerUsers()
 	taigaManager.MapIssuesRejectedPerUsers()
 	elapsed := time.Since(start)
+	fmt.Println("CR CURRENT MILE STONE", taigaManager.CurrentMileStone)
 	fmt.Printf("Took %s to run", elapsed)
 	c.HTML(http.StatusOK, "cr.tmpl", gin.H{
 		"title":               "Demo CR",
@@ -120,6 +123,7 @@ func postMilestone(c *gin.Context) {
 	start := time.Now()
 	milestone := c.PostForm("milestone")
 	milestone = strings.TrimSpace(milestone)
+	fmt.Println(fmt.Sprintf("RECEIVED MILE STONE CHANGE FROM %s, to %s", taigaManager.CurrentMileStone, milestone))
 	taigaManager.CurrentMileStone = milestone
 	taigaManager.ListMilestones()
 	fmt.Println("POST INDEX CURRENT MILESTONE IS", taigaManager.CurrentMileStone)
