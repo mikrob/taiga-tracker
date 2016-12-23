@@ -82,7 +82,13 @@ func (t *TaigaManager) MapStoriesDonePerUsers() {
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
 			if fromStatus == StatusReadyUS && toStatus == StatusDoneUS {
-				us.AssignedUser = userList[us.Assigne]
+				assign := ""
+				if us.Assigne == 0 || userList[us.Assigne] == "" {
+					assign = NotAssigned
+				} else {
+					assign = userList[us.Assigne]
+				}
+				us.AssignedUser = assign
 				storiesDones = append(storiesDones, *us)
 			}
 		}
@@ -99,7 +105,14 @@ func (t *TaigaManager) MapStoriesRejectedPerUsers() {
 		if nowYear == year && nowMonth == month && nowDay == day {
 			fromStatus, toStatus := t.retrieveUserStoryHistory(*us)
 			if fromStatus == StatusReadyUS && toStatus == StatusInProgressUS {
-				us.AssignedUser = userList[us.Assigne]
+				fmt.Println("Rejected US :", us.Subject)
+				assign := ""
+				if us.Assigne == 0 || userList[us.Assigne] == "" {
+					assign = NotAssigned
+				} else {
+					assign = userList[us.Assigne]
+				}
+				us.AssignedUser = assign
 				storiesRejected = append(storiesRejected, *us)
 			}
 		}
