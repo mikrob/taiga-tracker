@@ -21,6 +21,17 @@ var (
 	taigaManager   *taigaclient.TaigaManager
 )
 
+// func createMyRender() multitemplate.Render {
+// 	r := multitemplate.New()
+// 	r.AddFromFiles("wip", "templates/base.tmpl", "templates/wip.tmpl")
+// 	r.AddFromFiles("demo", "templates/base.tmpl", "templates/demo.tmpl")
+// 	r.AddFromFiles("cr", "templates/base.tmpl", "templates/cr.tmpl")
+// 	r.AddFromFiles("over", "templates/base.tmpl", "templates/overtake.tmpl")
+// 	r.AddFromFiles("index", "templates/base.tmpl", "templates/index.tmpl")
+//
+// 	return r
+// }
+
 func demosDatas(c *gin.Context) {
 	start := time.Now()
 	taigaManager.GetMilestoneWithDetails(*taigaMilestone)
@@ -130,6 +141,7 @@ func main() {
 	taigaManager = (&taigaclient.TaigaManager{}).NewTaigaManager(taigaUsername, taigaPassword, taigaProject, taigaURL)
 
 	router := gin.Default()
+	//router.HTMLRender = createMyRender()
 	router.Static("/css", "./css")
 	router.Static("/js", "./js")
 	router.Static("/fonts", "./fonts")

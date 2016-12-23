@@ -1,119 +1,98 @@
-<html>
+{{template "header.tmpl"}}
+<h3>
+    {{ .title }}
+</h3>
+<p>
+    Took {{ .time }} to retrieve datas
+</p>
+<h5>
+    User Stories Accepted
+</h5>
+<table>
+    <thead>
+        <tr>
+            <th data-field="id">Taiga Id</th>
+            <th data-field="name">Title</th>
+            <th data-field="name">User</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $index, $us := .userStoriesDone }}
+        <tr>
+            <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
+            <td>{{ $us.Subject }}</td>
+            <td>{{ $us.AssignedUser }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
 
-<head>
-    <title>Botsunit Taiga Tracker</title>
-    <!--Import Google Icon Font-->
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
-
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-
-<body>
-    <!--Import jQuery before materialize.js-->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="js/materialize.min.js"></script>
-    <div class="container">
-        <h3>
-            {{ .title }}
-        </h3>
-        <p>
-            Took {{ .time }} to retrieve datas
-        </p>
-        <h5>
-            User Stories Accepted
-        </h5>
-        <table>
-            <thead>
-                <tr>
-                    <th data-field="id">Taiga Id</th>
-                    <th data-field="name">Title</th>
-                    <th data-field="name">User</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{ range $index, $us := .userStoriesDone }}
-                <tr>
-                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
-                    <td>{{ $us.Subject }}</td>
-                    <td>{{ $us.AssignedUser }}</td>
-                </tr>
-                {{ end }}
-            </tbody>
-        </table>
-
-        <h5>
-            User Stories Rejected
-        </h5>
-        <table>
-            <thead>
-                <tr>
-                    <th data-field="id">Taiga Id</th>
-                    <th data-field="name">Title</th>
-                    <th data-field="name">User</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{ range $index, $us := .userStoriesRejected }}
-                <tr>
-                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
-                    <td>{{ $us.Subject }}</td>
-                    <td>{{ $us.AssignedUser }}</td>
-                </tr>
-                {{ end }}
-            </tbody>
-        </table>
+<h5>
+    User Stories Rejected
+</h5>
+<table>
+    <thead>
+        <tr>
+            <th data-field="id">Taiga Id</th>
+            <th data-field="name">Title</th>
+            <th data-field="name">User</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $index, $us := .userStoriesRejected }}
+        <tr>
+            <td><a href="{{$.taigaURL}}/project/admin-ufancyme/us/{{ $us.Ref }}" target="_blank"> {{ $us.Ref }}</a></td>
+            <td>{{ $us.Subject }}</td>
+            <td>{{ $us.AssignedUser }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
 
 
-        <h5>
-            Issues Accepted
-        </h5>
+<h5>
+    Issues Accepted
+</h5>
 
-        <table>
-            <thead>
-                <tr>
-                    <th data-field="id">Taiga Id</th>
-                    <th data-field="name">Title</th>
-                    <th data-field="name">User</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{ range $index, $issue := .issuesDone }}
-                <tr>
-                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
-                    <td>{{ $issue.Subject }}</td>
-                    <td>{{ $issue.AssignedUser }}</td>
-                </tr>
-                {{ end }}
-            </tbody>
-        </table>
+<table>
+    <thead>
+        <tr>
+            <th data-field="id">Taiga Id</th>
+            <th data-field="name">Title</th>
+            <th data-field="name">User</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $index, $issue := .issuesDone }}
+        <tr>
+            <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
+            <td>{{ $issue.Subject }}</td>
+            <td>{{ $issue.AssignedUser }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
 
-        <h5>
-            Issues Rejected
-        </h5>
-        <table>
-            <thead>
-                <tr>
-                    <th data-field="id">Taiga Id</th>
-                    <th data-field="name">Title</th>
-                    <th data-field="name">User</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{ range $index, $issue := .issuesRejected }}
-                <tr>
-                    <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
-                    <td>{{ $issue.Subject }}</td>
-                    <td>{{ $issue.AssignedUser }}</td>
-                </tr>
-                {{ end }}
-            </tbody>
-        </table>
-    </div>
+<h5>
+    Issues Rejected
+</h5>
+<table>
+    <thead>
+        <tr>
+            <th data-field="id">Taiga Id</th>
+            <th data-field="name">Title</th>
+            <th data-field="name">User</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $index, $issue := .issuesRejected }}
+        <tr>
+            <td><a href="{{$.taigaURL}}/project/admin-ufancyme/issue/{{ $issue.Ref }}" target="_blank"> {{ $issue.Ref }}</a></td>
+            <td>{{ $issue.Subject }}</td>
+            <td>{{ $issue.AssignedUser }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
 
-
-</body>
-
-</html>
+{{template "footer.tmpl"}}
