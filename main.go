@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	taigaUsername = flag.String("l", "api", "taiga login")
-	taigaPassword = flag.String("p", "botsunit8075", "taiga password")
-	taigaProject  = flag.String("t", "Ufancyme", "taiga project")
-	taigaURL      = flag.String("d", "https://taiga.botsunit.io", "taiga URL")
+	taigaUsername = flag.String("l", "login", "taiga login")
+	taigaPassword = flag.String("p", "password", "taiga password")
+	taigaProject  = flag.String("t", "project", "taiga project")
+	taigaURL      = flag.String("d", "https://taiga.example.io", "taiga URL")
 	taigaManager  *taigaclient.TaigaManager
 )
 
